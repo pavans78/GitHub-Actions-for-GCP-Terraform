@@ -1,5 +1,7 @@
 # Github-Actions-for-GCP
-The provided code snippet defines a workflow named "Deploy Infrastructure" for a GitHub Actions pipeline. Here's a breakdown of its components:
+
+
+The Github Actions workflow named "Deploy Infrastructure" for a GitHub Actions pipeline. Here's a breakdown of its components:
 
 **Workflow Name:**
 
