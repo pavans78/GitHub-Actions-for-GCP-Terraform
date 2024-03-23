@@ -50,3 +50,5 @@ The Github Actions workflow defines a named "Deploy Infrastructure" for a GitHub
     8. **Apply Terraform Changes:** This step applies the planned infrastructure changes defined in `plans.tfplan` to your Google Cloud environment.
 
 This workflow effectively demonstrates how to use GitHub Actions to automate infrastructure deployment using Terraform triggered by various events. Note that you'll need to replace placeholders like `my-project`, `123456789`, and service account details with your own values. 
+
+For in-depth instructions and details, refer to the official documentation on [GitHub Actions Workflow](https://docs.github.com/en/actions/using-workflows/about-workflows)
