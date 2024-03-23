@@ -1,0 +1,81 @@
+# Name of the workflow. GitHub displays the names of the workflows under the repository's "Actions" tab.
+name: Deploy Infrastructure
+
+# use "on" to define which events can cause the workflow to run
+on:
+  # if event is workflow dispatch, we have to manaully trigger the Github Actions.
+  workflow_dispatch: 
+    inputs:
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - production
+          - qa
+          - dev
+  # when we raise the pull request or push the code to main branch, the CICD pipeline will automatcally triggers in the actons.
+  pull_request:  
+    branches: [ "main" ]
+  push:
+    branches:
+    - 'main'
+
+
+jobs:
+  # Job that will dynamically set github actions environment based on the branches.
+
+  deploy:
+    permissions:
+      contents: read
+      id-token: write
+
+    name: Deploy Infra
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Pull code into container
+        uses: actions/checkout@v2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: 'my-project'
+          workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+          service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: 'my-project'
+
+      - name: Initialize terraform 
+        working-directory: ./terraform
+        shell: sh
+        run: |
+          terraform init 
+
+      - name: Validate the terraform files 
+        working-directory: ./terraform
+        shell: sh
+        run: |
+          terraform validate
+
+      - name: Check format of the terraform files
+        working-directory: ./terraform
+        shell: sh
+        run: |
+          terraform fmt -check
+
+      - name: Plan terraform changes 
+        working-directory: ./terraform
+        shell: sh
+        run: |
+          terraform plan -var-file=var.tfvars -out=plans.tfplan
+
+      - name: Apply terraform changes 🌳
+        working-directory: ./terraform
+        shell: sh
+        run: |
+          terraform apply plans.tfplan 
